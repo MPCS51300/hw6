@@ -52,7 +52,11 @@ def compile_ir(engine, llvm_ir, should_optimize, optimization):
         pm = llvm.create_module_pass_manager()
         pmb.populate(pm)
         
+        print("######## Optimization Start ########")
+        start_time = time.time()
         pm.run(mod)
+        print("######## Total Time: %s seconds ########" % (time.time() - start_time))
+        print()
 
     mod.verify()
     # Now add the module and make sure it is ready for execution
@@ -75,4 +79,5 @@ def compile_and_execute(llvm_ir, should_optimize, jit, optimization):
         cfunc = CFUNCTYPE(c_int)(func_ptr)
         res = cfunc()
         print("######## Total Time: %s seconds ########" % (time.time() - start_time))
+        print()
     return mod

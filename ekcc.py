@@ -2,6 +2,7 @@ import argparse, sys
 import lexer, yacc, codeGen, binding
 import yaml
 import os
+import time
 
 def read_content(input_file):
     with open(input_file, 'r') as input:  
@@ -48,7 +49,11 @@ else:
         sys.exit(1)
     if args.emit_ast:
         write_to_file(args.o,  yaml.dump(ast))
+    print("######## Generating IR ########")
+    start_time = time.time()
     mod = codeGen.generate_code(ast, undefined)
+    print("######## Total Time: %s seconds ########" % (time.time() - start_time))
+    print()
     optimization = [args.dul, args.it, args.lv, args.ol, args.sl, args.sv]
     mod = binding.compile_and_execute(mod, args.O, args.jit, optimization)
     if args.emit_llvm:
