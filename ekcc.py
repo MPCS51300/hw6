@@ -1,6 +1,7 @@
 import argparse, sys
 import lexer, yacc, codeGen, binding
 import yaml
+import os
 
 def read_content(input_file):
     with open(input_file, 'r') as input:  
@@ -16,7 +17,7 @@ def write_to_file(output_file, content):
 
 parser = argparse.ArgumentParser(prog=sys.argv[0], 
                                  description='Compiler',
-                                 usage="python3 ekcc.py [-h|-?] [-v] [-O] [-emit-ast|-emit-llvm] -o <output-file> <input-file>", 
+                                 usage="python3 ekcc.py [-h|-?] [-v] [-O] [-emit-ast|-emit-llvm] -o <output-file> <input-file> [-jit]", 
                                  add_help=False)
 parser.add_argument("-h", action="help", help="show this help message and exit")
 parser.add_argument("-v", action="store_true", help="print information for debugging")
@@ -25,6 +26,7 @@ parser.add_argument("-emit-ast", action="store_true", default=False, help="gener
 parser.add_argument("-emit-llvm", action="store_true", default=False, help="generate LLVM IR")
 parser.add_argument("-o", action="store", default=sys.stdout, help="set output file path")
 parser.add_argument("input_file", help = "ek file to be compiled")
+parser.add_argument("-jit", action="store_true", help = "use JIT")
 args, undefined = parser.parse_known_args()
 
 exitcode = 0
@@ -41,8 +43,14 @@ else:
     if args.emit_ast:
         write_to_file(args.o,  yaml.dump(ast))
     mod = codeGen.generate_code(ast, undefined)
-    mod = binding.compile_and_execute(mod, args.O)
+    mod = binding.compile_and_execute(mod, args.O, args.jit)
     if args.emit_llvm:
-        write_to_file(args.o, mod)
+        if args.o != "exe":
+            print(args.jit)
+            write_to_file(args.o, mod)
+        elif not args.jit:
+            write_to_file("temp.ll", mod)
+            os.system("clang -c temp.ll -o temp.o")
+            os.system("clang main.cpp temp.o -o exe")
 
 print("exit code: "+str(exitcode))

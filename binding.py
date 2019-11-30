@@ -52,13 +52,14 @@ def compile_ir(engine, llvm_ir, should_optimize):
     return str(mod)
 
 # The function called by ekcc
-def compile_and_execute(llvm_ir, should_optimize):
+def compile_and_execute(llvm_ir, should_optimize, jit):
     engine = create_execution_engine()
     mod = compile_ir(engine, llvm_ir, should_optimize)
 
-    # Look up the function pointer (a Python int)
-    func_ptr = engine.get_function_address("run")
-    # Run the function via ctypes
-    cfunc = CFUNCTYPE(c_int)(func_ptr)
-    res = cfunc()
+    if jit:
+        # Look up the function pointer (a Python int)
+        func_ptr = engine.get_function_address("run")
+        # Run the function via ctypes
+        cfunc = CFUNCTYPE(c_int)(func_ptr)
+        res = cfunc()
     return mod
