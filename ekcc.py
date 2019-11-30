@@ -17,7 +17,7 @@ def write_to_file(output_file, content):
 
 parser = argparse.ArgumentParser(prog=sys.argv[0], 
                                  description='Compiler',
-                                 usage="python3 ekcc.py [-h|-?] [-v] [-O] [-emit-ast|-emit-llvm] -o <output-file> <input-file> [-jit]", 
+                                 usage="python3 ekcc.py [-h|-?] [-v] [-O] [-emit-ast|-emit-llvm] -o <output-file> <input-file> [-jit] [-dul] -it <inlining_threshold> [-lv] -ol <opt_level> -sl <size_level> [-sv]", 
                                  add_help=False)
 parser.add_argument("-h", action="help", help="show this help message and exit")
 parser.add_argument("-v", action="store_true", help="print information for debugging")
@@ -27,6 +27,12 @@ parser.add_argument("-emit-llvm", action="store_true", default=False, help="gene
 parser.add_argument("-o", action="store", default=sys.stdout, help="set output file path")
 parser.add_argument("input_file", help = "ek file to be compiled")
 parser.add_argument("-jit", action="store_true", help = "use JIT")
+parser.add_argument("-dul", action="store_true", help = "disable loop unrolling")
+parser.add_argument("-it", action="store", default = 10, help = "the integer threshold for inlining one function into another")
+parser.add_argument("-lv", action="store_true", help = "allow vectorizing loops")
+parser.add_argument("-ol", action="store", default = 3, help = "general optimization level")
+parser.add_argument("-sl", action="store", default = 2, help = "whether and how much to optimize for size, as an integer between 0 and 2")
+parser.add_argument("-sv", action="store_true", help = "enable the SLP vectorizer")
 args, undefined = parser.parse_known_args()
 
 exitcode = 0
@@ -43,10 +49,10 @@ else:
     if args.emit_ast:
         write_to_file(args.o,  yaml.dump(ast))
     mod = codeGen.generate_code(ast, undefined)
-    mod = binding.compile_and_execute(mod, args.O, args.jit)
+    optimization = [args.dul, args.it, args.lv, args.ol, args.sl, args.sv]
+    mod = binding.compile_and_execute(mod, args.O, args.jit, optimization)
     if args.emit_llvm:
         if args.o != "exe":
-            print(args.jit)
             write_to_file(args.o, mod)
         elif not args.jit:
             write_to_file("temp.ll", mod)

@@ -4,6 +4,8 @@ from ctypes import CFUNCTYPE, c_int, c_float
 
 import llvmlite.binding as llvm
 
+import time
+
 # All these initializations are required for code generation!
 llvm.initialize()
 llvm.initialize_native_target()
@@ -24,7 +26,7 @@ def create_execution_engine():
     return engine
 
 
-def compile_ir(engine, llvm_ir, should_optimize):
+def compile_ir(engine, llvm_ir, should_optimize, optimization):
     """
     Compile the LLVM IR string with the given engine.
     The compiled module object is returned.
@@ -34,7 +36,15 @@ def compile_ir(engine, llvm_ir, should_optimize):
 
     if should_optimize:
         pmb = llvm.create_pass_manager_builder()
-        pmb.opt_level = 3
+        if optimization[0]:
+            pmb.disable_unroll_loops = True
+        pmb.opt_level = optimization[1]
+        if optimization[2]:
+            pmb.loop_vectorize = True
+        pmb.opt_level = optimization[3]
+        pmb.size_level = optimization[4]
+        if optimization[5]:
+            pmb.slp_vectorize = True
 
         fpm = llvm.create_function_pass_manager(mod)
         pmb.populate(fpm)
@@ -52,14 +62,17 @@ def compile_ir(engine, llvm_ir, should_optimize):
     return str(mod)
 
 # The function called by ekcc
-def compile_and_execute(llvm_ir, should_optimize, jit):
+def compile_and_execute(llvm_ir, should_optimize, jit, optimization):
     engine = create_execution_engine()
-    mod = compile_ir(engine, llvm_ir, should_optimize)
+    mod = compile_ir(engine, llvm_ir, should_optimize, optimization)
 
     if jit:
+        print("######## Execution Start ########")
         # Look up the function pointer (a Python int)
         func_ptr = engine.get_function_address("run")
         # Run the function via ctypes
+        start_time = time.time()
         cfunc = CFUNCTYPE(c_int)(func_ptr)
         res = cfunc()
+        print("######## Total Time: %s seconds ########" % (time.time() - start_time))
     return mod
