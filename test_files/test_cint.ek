@@ -1,0 +1,9 @@
+def int run (){
+	cint $a=1;
+	print $a;
+	$a=(-1+2147483647)+1;
+	print $a; #2147483647
+	cint $t = -2147483648;
+	print -$t;
+	return 0;
+}

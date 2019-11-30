@@ -1,0 +1,9 @@
+def void someF (ref int $z) {
+print $z;
+    return;
+}
+def int run(){
+int $a=17;
+someF($a);
+	return 0;
+}

@@ -1,0 +1,16 @@
+
+# check associativity of all left-to-right operators
+
+
+def int run () {
+    int $a=1 * 2 * 3;
+    print $a;
+    float $b=1 / 2 / 3;
+    print $b;
+    $a=1 + 2 + 3;
+    print $a;
+    $a=1 - 2 - 3;
+    print $a;
+   
+    return 1;
+}

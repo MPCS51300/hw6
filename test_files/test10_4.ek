@@ -1,0 +1,15 @@
+# check precedence and assoc of all ops.
+
+
+def int run () {
+    int $first = 1 * 2 / 3 + 4 - 5  ;
+    print $first;
+    int $second =  16 - 17 + 18 / 19 * 20;
+    print $second;
+    bool $r = 4==4&&(5>6);
+    print $r;
+    print "true";
+    print "false";
+    print false;
+    return 0;
+}

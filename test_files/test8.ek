@@ -1,0 +1,16 @@
+
+# Correct parsing of "while" statements
+
+
+def int d (int $x) {
+    while ($x > 0)
+        while (true)
+            print "doubly nested";
+
+    return 0;
+}
+
+def int run(){
+d(0);
+	return 0;
+}
