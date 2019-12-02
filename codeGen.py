@@ -412,7 +412,6 @@ def generate_stmt(ast, module, builder, func, variables):
         if value.type.is_pointer:
             value = load_var(builder, value)
             if value.type == ir.FloatType():
-                print("here is float")
                 global_fmt = module.get_global("fstr_float")
                 value = builder.fpext(value, ir.DoubleType(), name='float_double')
             elif value.type == ir.IntType(32):
