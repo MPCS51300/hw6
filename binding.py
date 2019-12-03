@@ -35,6 +35,7 @@ def compile_ir(engine, llvm_ir, should_optimize, optimization):
     mod = llvm.parse_assembly(str(llvm_ir))
 
     if should_optimize:
+        print("######## Optimization Start ########")
         pmb = llvm.create_pass_manager_builder()
         if optimization[0]:
             pmb.disable_unroll_loops = True
@@ -52,7 +53,6 @@ def compile_ir(engine, llvm_ir, should_optimize, optimization):
         pm = llvm.create_module_pass_manager()
         pmb.populate(pm)
         
-        print("######## Optimization Start ########")
         start_time = time.time()
         pm.run(mod)
         print("######## Total Time: %s seconds ########" % (time.time() - start_time))

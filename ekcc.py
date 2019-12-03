@@ -42,17 +42,19 @@ if args.emit_ast and args.emit_llvm:
     raise Exception("Cannot emit_ast and emit_llvm at the same time")
 else:
     content = read_content(args.input_file)
+    parse_time1 = time.time()
     ast, err_message = yacc.parse(content)
+    parse_time2 = time.time()
     if err_message != None:
         print(err_message)
         print("exit code: "+str(1))
         sys.exit(1)
     if args.emit_ast:
         write_to_file(args.o,  yaml.dump(ast))
-    print("######## Generating IR ########")
     start_time = time.time()
     mod = codeGen.generate_code(ast, undefined)
-    print("######## Total Time: %s seconds ########" % (time.time() - start_time))
+    print("######## Compile ########")
+    print("######## Total Time: %s seconds ########" % (time.time() - start_time + parse_time2 - parse_time1))
     print()
     optimization = [args.dul, args.it, args.lv, args.ol, args.sl, args.sv]
     mod = binding.compile_and_execute(mod, args.O, args.jit, optimization)
