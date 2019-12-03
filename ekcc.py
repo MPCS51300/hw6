@@ -60,7 +60,7 @@ else:
     if args.emit_llvm:
         if args.o != "exe":
             write_to_file(args.o, mod)
-        elif not args.jit:
+        else:
             write_to_file("temp.ll", mod)
             os.system("clang -c temp.ll -o temp.o")
             os.system("clang main.cpp temp.o -o exe")
