@@ -1,4 +1,4 @@
-# hw3
+# hw6
 
 ## Group members
 
@@ -8,13 +8,29 @@ Hui Yang
 
 ## Explanation on the flags:
 
-Usage: `python3 ekcc.py [-emit-ast|-emit-llvm] -o /path/to/output/file /path/to/input/file`
+Usage: `python3 ekcc.py [-h|-?] [-v] [-O] [-emit-ast|-emit-llvm] -o <output-file> <input-file> [-jit] [-dul] -it <inlining_threshold> [-lv] -ol <opt_level> -sl <size_level> [-sv]`
 
 With `-emit-ast` flag on, the program will write the AST generated in YAML format into output file.
 
 With `-emit-llvm` flag on, the program will write the LLVM IR into output file.
 
 `-o` flag defines the place of output. In case where the output is not specified, the AST tree would be in standard output.
+
+`-jit` use JIT. program will be executed
+
+`-O`   open optimization
+
+`-dul` disable loop unrolling
+
+`-it`  the integer threshold for inlining one function into another
+
+`-lv`  allow vectorizing loops
+
+`-ol`  general optimization level
+
+`-sl`  whether and how much to optimize for size, as an integer between 0 and 2
+
+`-sv`  enable the SLP vectorizer
 
 ## How to Run
 ### Step 1: Install dependency packages
