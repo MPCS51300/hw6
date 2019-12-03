@@ -39,11 +39,11 @@ def compile_ir(engine, llvm_ir, should_optimize, optimization):
         pmb = llvm.create_pass_manager_builder()
         if optimization[0]:
             pmb.disable_unroll_loops = True
-        pmb.opt_level = optimization[1]
+        pmb.opt_level = int(optimization[1])
         if optimization[2]:
             pmb.loop_vectorize = True
-        pmb.opt_level = optimization[3]
-        pmb.size_level = optimization[4]
+        pmb.opt_level = int(optimization[3])
+        pmb.size_level = int(optimization[4])
         if optimization[5]:
             pmb.slp_vectorize = True
 
@@ -55,8 +55,7 @@ def compile_ir(engine, llvm_ir, should_optimize, optimization):
         
         start_time = time.time()
         pm.run(mod)
-        print("######## Total Time: %s seconds ########" % (time.time() - start_time))
-        print()
+        print("######## Total Optimization Time: %s seconds ########" % (time.time() - start_time))
 
     mod.verify()
     # Now add the module and make sure it is ready for execution
@@ -71,7 +70,7 @@ def compile_and_execute(llvm_ir, should_optimize, jit, optimization, total_time)
     start_time = time.time()
     engine = create_execution_engine()
     mod = compile_ir(engine, llvm_ir, should_optimize, optimization)
-    print("################## Total Time: %s seconds ##################" % (time.time() - start_time + total_time))
+    print("################## Total Compile Time: %s seconds ##################" % (time.time() - start_time + total_time))
     print()
     if jit:
         print("######## Execution Start ########")
@@ -81,6 +80,6 @@ def compile_and_execute(llvm_ir, should_optimize, jit, optimization, total_time)
         start_time = time.time()
         cfunc = CFUNCTYPE(c_int)(func_ptr)
         res = cfunc()
-        print("######## Total Time: %s seconds ########" % (time.time() - start_time))
+        print("######## Total Execution Time: %s seconds ########" % (time.time() - start_time))
         print()
     return mod
