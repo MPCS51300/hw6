@@ -66,10 +66,13 @@ def compile_ir(engine, llvm_ir, should_optimize, optimization):
     return str(mod)
 
 # The function called by ekcc
-def compile_and_execute(llvm_ir, should_optimize, jit, optimization):
+def compile_and_execute(llvm_ir, should_optimize, jit, optimization, total_time):
+    print("################## Compile Start ##################")
+    start_time = time.time()
     engine = create_execution_engine()
     mod = compile_ir(engine, llvm_ir, should_optimize, optimization)
-
+    print("################## Total Time: %s seconds ##################" % (time.time() - start_time + total_time))
+    print()
     if jit:
         print("######## Execution Start ########")
         # Look up the function pointer (a Python int)

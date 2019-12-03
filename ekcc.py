@@ -51,13 +51,12 @@ else:
         sys.exit(1)
     if args.emit_ast:
         write_to_file(args.o,  yaml.dump(ast))
-    start_time = time.time()
+    gen_time1 = time.time()
     mod = codeGen.generate_code(ast, undefined)
-    print("######## Compile ########")
-    print("######## Total Time: %s seconds ########" % (time.time() - start_time + parse_time2 - parse_time1))
-    print()
+    gen_time2 = time.time()
+    total_time = parse_time2 - parse_time1 + gen_time2 -gen_time1
     optimization = [args.dul, args.it, args.lv, args.ol, args.sl, args.sv]
-    mod = binding.compile_and_execute(mod, args.O, args.jit, optimization)
+    mod = binding.compile_and_execute(mod, args.O, args.jit, optimization, total_time)
     if args.emit_llvm:
         if args.o != "exe":
             write_to_file(args.o, mod)
